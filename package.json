@@ -1,0 +1,31 @@
+{
+  "name": "yingchigamesdk-cocos-v3",
+  "uuid": "090abbac-29dd-4a45-8ee7-beebe124e0b7",
+  "version": "25.7.28",
+  "creator": {
+    "version": "3.5.0"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "npm run build:js && npm run build:dts",
+    "build:js": "esbuild assets/script/index.ts --bundle --format=esm --outfile=dist/index.js --external:cc --sourcemap",
+    "build:dts": "tsc --emitDeclarationOnly --outDir dist"
+  },
+  "author": "jackYan",
+  "files": [
+    "dist",
+    "assets/resources/Privacy"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.8"
+  }
+}
