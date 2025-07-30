@@ -1,6 +1,8 @@
+import { Node } from "cc";
 import { GameInterface } from "../../GameInterface";
 import { BannerType } from "../../minigame/BannerType";
 import { InterstitialType } from "../../minigame/InterstitialType";
+import { PrivacyListener } from "../../minigame/PrivacyListener";
 
 export class AndroidGame implements GameInterface {
 
@@ -14,8 +16,8 @@ export class AndroidGame implements GameInterface {
         jsb.reflection.callStaticMethod(this.className, 'login', '()V')
     }
 
-    pay(params: string, callBack: Function): void {
-
+    showPolicy(node: Node, callBack: PrivacyListener): void {
+        jsb.reflection.callStaticMethod(this.className, 'showPolicy', '()V')
     }
 
     showBanner(position: BannerType): void {

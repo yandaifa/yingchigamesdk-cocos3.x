@@ -1,3 +1,4 @@
+import { Node } from "cc"
 import { BannerType } from "./minigame/BannerType"
 import { InterstitialType } from "./minigame/InterstitialType"
 import { PrivacyListener } from "./minigame/PrivacyListener"
@@ -10,18 +11,20 @@ export interface GameInterface {
    */
   init(callBack?): void
 
+  //展示隐私政策
+  showPolicy?(node: Node, callBack: PrivacyListener): void
   /**
    * 登录
    * @param callBack 登录结果回调
    */
-  login(callBack?: Function): void
+  login?(callBack?: Function): void
 
   /**
    * 支付
    * @param params 支付参数
    * @param callBack 支付回调
    */
-  pay(params: string, callBack: Function): void
+  pay?(params: string, callBack: Function): void
 
   /**
    * 展示banner广告
@@ -59,5 +62,5 @@ export interface GameInterface {
    * @param params 入参
    * @param callBack 回调
    */
-  customFunc(methodName: string, params: any[], callBack: Function): any
+  customFunc?(methodName: string, params: any[], callBack: Function): any
 }

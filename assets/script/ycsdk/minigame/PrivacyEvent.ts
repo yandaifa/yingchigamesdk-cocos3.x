@@ -17,7 +17,6 @@ export class PrivacyEvent extends Component {
                 this.yinsiUI.active = false
             }, this)
             YCSDK.ins.getGameNode().addChild(this.yinsiUI)
-            console.log('on PrivacyEvent add')
         })
     }
 

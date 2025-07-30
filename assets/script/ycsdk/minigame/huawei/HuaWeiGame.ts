@@ -204,7 +204,16 @@ export class HuaWeiGame implements GameInterface {
         this.bannerAd.hide()
     }
 
-    showInters(type: InterstitialType): void {
+    showInters(type: InterstitialType = InterstitialType.Initial): void {
+        if (!type) {
+            const odds = YCSDK.ins.random(100)
+            if (odds >= 50 && sdkconfig.intersId.length >= 1) {
+                this.showIntersVideo()
+            } else if (sdkconfig.nativeId.length >= 1) {
+                this.showNative()
+            }
+            return
+        }
         switch (type) {
             case InterstitialType.Initial:
             case InterstitialType.Video:

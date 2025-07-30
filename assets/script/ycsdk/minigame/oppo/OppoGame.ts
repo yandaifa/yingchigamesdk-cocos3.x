@@ -10,7 +10,6 @@ export class OppoGame implements GameInterface {
     private qg = window['qg']
     private bannerAd
     private nativeAd
-    private bigPicAd
     private count: number = 0
 
     constructor() {
@@ -85,7 +84,6 @@ export class OppoGame implements GameInterface {
                 this.bannerAd.destroy()
                 this.bannerAd = null
             }
-            this.refreshBanner()
         })
         this.bannerAd.onError(err => {
             console.log("banner错误监听: ", JSON.stringify(err))
@@ -101,17 +99,6 @@ export class OppoGame implements GameInterface {
         this.bannerAd.show()
     }
 
-    private timerBanner
-    private refreshBanner() {
-        if (this.timerBanner) {
-            clearTimeout(this.timerBanner)
-            this.timerBanner = 0
-        }
-        this.timerBanner = setTimeout(() => {
-            this.createBannerAd(BannerType.Bottom)
-        }, 30 * 1000) // 每30秒刷新一次banner广告
-    }
-
     hideBanner(): void {
         console.log("oppo hide banner")
         if (this.bannerAd) {
@@ -119,15 +106,11 @@ export class OppoGame implements GameInterface {
         }
     }
 
-    hideBigPicAd() {
-        console.log("oppo hide bigPicAd")
-        if (this.bigPicAd) {
-            this.bigPicAd.hide()
+    showInters(type: InterstitialType = InterstitialType.Initial): void {
+        if (!type) {
+            this.showInitialType()
+            return
         }
-    }
-
-    showInters(type: InterstitialType): void {
-        // this.showNativeComponent()
         switch (type) {
             case InterstitialType.Initial:
                 this.showInitialType()
@@ -182,7 +165,6 @@ export class OppoGame implements GameInterface {
             console.log("快应用平台版本号低于1094,暂不支持原生模板广告相关API")
             return
         }
-        this.hideBigPicAd()
         if (this.nativeAd) {
             this.nativeAd.destroy()
             this.nativeAd = null
@@ -259,7 +241,7 @@ export class OppoGame implements GameInterface {
         videoAd.onError(err => {
             console.log('onError:' + JSON.stringify(err))
             videoAd.destroy()
-            YCSDK.ins.onError(AdType.Video,videoCallBack)
+            YCSDK.ins.onError(AdType.Video, videoCallBack)
         })
         videoAd.onClick(function (obj) {
             console.log(`on click: code: ${obj.code}, msg: '${obj.msg}'`)
@@ -281,6 +263,7 @@ export class OppoGame implements GameInterface {
                     // 没看完,不给奖励
                     console.log('广告没看完')
                     YCSDK.ins.onClose(AdType.Video)
+                    videoCallBack && videoCallBack(false)
                 }
             }
         })

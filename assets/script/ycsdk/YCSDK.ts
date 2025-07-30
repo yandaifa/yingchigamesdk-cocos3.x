@@ -73,50 +73,16 @@ export class YCSDK {
     }
 
     agreePrivacy(): boolean {
+        if (this.isRun(sys.Platform.ANDROID)) {
+            return true
+        }
         return StorageUtils.getStringData(this.privacyKey) == 'agree'
     }
 
     showPolicy(node: Node, callBack: PrivacyListener): void {
         console.log("ycsdk showPolicy")
-        if (this.isRun(sys.Platform.ANDROID)) {
-            return
-        }
         this.gameNode = node
-        let agree = StorageUtils.getStringData(this.privacyKey)
-        console.log(agree)
-        if (agree == 'agree') {
-            console.log("user agree privacy, not show")
-            callBack && callBack.userAgree()
-            return
-        }
-        if (!node) {
-            console.log("node is null")
-            callBack && callBack.nodeError()
-            return
-        }
-        resources.load('Privacy/policyUI', Prefab, (err, prefab) => {
-            if (err) {
-                console.error('加载隐私政策Prefab失败:', err)
-                return
-            }
-            const yinsiUI = instantiate(prefab)
-            const content = yinsiUI.getChildByName('panel').getChildByName('content')
-            if (!content.getComponent(PrivacyEvent)) {
-                content.addComponent(PrivacyEvent)
-            }
-            const agree = yinsiUI.getChildByName('panel').getChildByName('agree')
-            agree.on(Node.EventType.TOUCH_END, () => {
-                callBack.onAgree && callBack.onAgree()
-                StorageUtils.setStringData(this.privacyKey, "agree")
-                yinsiUI.active = false
-            }, this)
-            const disagree = yinsiUI.getChildByName('panel').getChildByName('disagree')
-            disagree.on(Node.EventType.TOUCH_END, () => {
-                callBack.onDisAgree && callBack.onDisAgree()
-                yinsiUI.active = false
-            }, this)
-            YCSDK.ins.getGameNode().addChild(yinsiUI)
-        })
+        this.platform.showPolicy(node, callBack)
     }
 
     login(callBack?: Function): void {
@@ -142,12 +108,8 @@ export class YCSDK {
         return Math.floor(Math.random() * max) + 1
     }
 
-    showInters(type: InterstitialType = InterstitialType.Initial): void {
+    showInters(type?: InterstitialType): void {
         console.log("ycsdk show interstitial, type:", type)
-        if (type) {
-            this.platform.showInters(type)
-            return
-        }
         this.platform.showInters(type)
     }
 
