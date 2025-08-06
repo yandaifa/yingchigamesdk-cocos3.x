@@ -2,7 +2,7 @@ import { sys, Node, resources, Prefab, instantiate, view } from "cc"
 import { AdState } from "./AdState"
 import { AdType } from "./AdType"
 import { GameInterface } from "./GameInterface"
-import { BannerType } from "./minigame/BannerType.js"
+import { BannerType } from "./minigame/BannerType"
 import { DebugGame } from "./minigame/DebugGame"
 import { InterstitialType } from "./minigame/InterstitialType"
 import { MiniGame } from "./minigame/MiniGame"
@@ -64,11 +64,13 @@ export class YCSDK {
             return
         }
         sdkconfig.pkgName = config.pkgName
+        sdkconfig.appId = config.appId
         sdkconfig.bannerId = config.bannerId
         sdkconfig.intersId = config.intersId
         sdkconfig.nativeId = config.nativeId
         sdkconfig.videoId = config.videoId
         sdkconfig.nativeBannerId = config.nativeBannerId
+        sdkconfig.extension = config.extension
         this.platform.init(callBack)
     }
 

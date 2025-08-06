@@ -5,7 +5,6 @@ import { sdkconfig } from "../../SDKConfig";
 import { YCSDK } from "../../YCSDK";
 import { BannerType } from "../BannerType";
 import { InterstitialType } from "../InterstitialType";
-import { PrivacyListener } from "../PrivacyListener";
 
 export class HuaWeiGame implements GameInterface {
 
@@ -29,7 +28,7 @@ export class HuaWeiGame implements GameInterface {
     login(callBack?: Function): void {
         this.qg.gameLoginWithReal({
             forceLogin: 1,
-            appid: sdkconfig.version,
+            appid: sdkconfig.appId,
             success: function (data) {
                 // 登录成功后，可以存储账号信息。
                 callBack && callBack(true)
@@ -162,11 +161,11 @@ export class HuaWeiGame implements GameInterface {
         var bannerTop = sysInfo.safeArea.height
         this.bannerAd = this.qg.createBannerAd({
             adUnitId: sdkconfig.ycBannerId,
-            adIntervals: 45,    //刷新时间
+            adIntervals: 35,    //刷新时间
             style: {
-                top: bannerTop - 60,
+                top: bannerTop - 20,
                 left: 0,
-                height: 60,
+                height: 57,
                 width: 360,
             }
         })
@@ -206,11 +205,13 @@ export class HuaWeiGame implements GameInterface {
 
     showInters(type: InterstitialType = InterstitialType.Initial): void {
         if (!type) {
-            const odds = YCSDK.ins.random(100)
+            let odds = YCSDK.ins.random(100)
             if (odds >= 50 && sdkconfig.intersId.length >= 1) {
                 this.showIntersVideo()
             } else if (sdkconfig.nativeId.length >= 1) {
                 this.showNative()
+            }else{
+                this.showIntersVideo()
             }
             return
         }

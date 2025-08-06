@@ -6,6 +6,9 @@ export class PrivacyEvent extends Component {
     private yinsiUI: Node
 
     onLoad(): void {
+        if (YCSDK.ins.isRun(sys.Platform.ANDROID)) {
+            return
+        }
         resources.load('Privacy/yinsiUI', Prefab, (err, prefab: Prefab) => {
             if (err) {
                 console.error('加载Prefab失败:', err)
@@ -22,6 +25,10 @@ export class PrivacyEvent extends Component {
 
     openPrivacyPolicy(event) {
         console.log("点击隐私政策")
+        if (YCSDK.ins.isRun(sys.Platform.ANDROID)) {
+            YCSDK.ins.showPolicy(null, null)
+            return
+        }
         if (YCSDK.ins.isRun(sys.Platform.HUAWEI_QUICK_GAME)) {
             this.hwOpen()
             return
