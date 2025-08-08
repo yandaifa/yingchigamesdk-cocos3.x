@@ -1,18 +1,19 @@
 import { _decorator, Component, Node } from 'cc';
 import { YCSDK } from './ycsdk/YCSDK';
+import { Config } from './ycsdk/SDKConfig';
 const { ccclass, property } = _decorator;
 
 @ccclass('Demo')
 export class Demo extends Component {
 
     init() {
-        let param = {
+        let param: Config = {
             pkgName: "",
+            appId: "",
             bannerId: [],
             intersId: [],
             videoId: ["111", "222", "333"],
             nativeId: [],
-            nativeBannerId: []
         }
         YCSDK.ins.init(param, () => {
             console.log('ycsdk init finish')
