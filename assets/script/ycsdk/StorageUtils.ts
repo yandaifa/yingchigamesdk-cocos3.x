@@ -1,29 +1,42 @@
 import { sys } from "cc";
 
-export class StorageUtils{
+export class StorageUtils {
 
 
-        static setStringData(key: string, value: string): void {
-            if (key == "" || value == "") return;
-            if (typeof value != "string") value = JSON.stringify(value);
-            sys.localStorage.setItem(key, value);
-        }
-       
-        static getStringData(key: string): string {
-            let value = sys.localStorage.getItem(key);
-            if (value == "" || value == undefined || value == null) value = "";
-            return value;
-        }
+    static setStringData(key: string, value: string): void {
+        if (key == "" || value == "") return;
+        if (typeof value != "string") value = JSON.stringify(value);
+        sys.localStorage.setItem(key, value);
+    }
 
-        static setBooleanData(key: string, value: boolean): void {
-            sys.localStorage.setItem(key, value.toString());
+    static getStringData(key: string): string {
+        let value = sys.localStorage.getItem(key);
+        if (value == "" || value == undefined || value == null) value = "";
+        return value;
+    }
+
+    static setBooleanData(key: string, value: boolean): void {
+        sys.localStorage.setItem(key, value.toString());
+    }
+
+    static getBooleanData(key: string): boolean {
+        let value = sys.localStorage.getItem(key);
+        if (value == "" || value == undefined || value == null) return false;
+        if (value == "true") return true;
+        if (value == "false") return false;
+        return false;
+    }
+    
+    static setIntData(key: string, value: number): void {
+        sys.localStorage.setItem(key, value.toString())
+    }
+
+    static getIntgData(key: string): number {
+        let value = sys.localStorage.getItem(key)
+        if (value) {
+            return parseInt(value)
         }
-       
-        static getBooleanData(key: string): boolean {
-            let value = sys.localStorage.getItem(key);
-            if (value == "" || value == undefined || value == null) return false;
-            if (value == "true") return true;
-            if (value == "false") return false;
-            return false;
-        }
+        return 0
+
+    }
 }
