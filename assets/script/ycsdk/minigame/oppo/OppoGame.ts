@@ -161,7 +161,8 @@ export class OppoGame implements GameInterface {
             console.log('原生模板广告参数没有配置')
             return
         }
-        if (this.qg.getSystemInfoSync().platformVersionCode < 1094) {
+        let { windowHeight, windowWidth, platformVersionCode, screenWidth, screenHeight } = this.qg.getSystemInfoSync()
+        if (platformVersionCode < 1094) {
             console.log("快应用平台版本号低于1094,暂不支持原生模板广告相关API")
             return
         }
@@ -171,10 +172,10 @@ export class OppoGame implements GameInterface {
         }
         this.nativeAd = this.qg.createCustomAd({
             adUnitId: sdkconfig.ycNativeId,
-            style: {    //开发者自行设置
-                top: this.qg.getSystemInfoSync().windowHeight * 0.3,
-                left: 0,
-                width: this.qg.getSystemInfoSync().screenWidth,
+            style: {
+                top: windowHeight * 0.4,
+                left: (windowWidth - windowWidth * 0.6) / 2,
+                width: windowWidth * 0.6,
             }
         })
         this.nativeAd.onLoad(() => {
