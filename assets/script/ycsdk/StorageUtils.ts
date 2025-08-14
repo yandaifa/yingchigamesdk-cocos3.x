@@ -37,6 +37,5 @@ export class StorageUtils {
             return parseInt(value)
         }
         return 0
-
     }
 }
