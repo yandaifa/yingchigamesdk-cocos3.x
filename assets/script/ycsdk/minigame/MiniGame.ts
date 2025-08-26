@@ -17,6 +17,7 @@ import { Md5 } from "./md5";
 import { PrivacyListener } from "./PrivacyListener";
 import { StorageUtils } from "../StorageUtils";
 import { PrivacyEvent } from "./PrivacyEvent";
+import { SubornVideoConfig } from "./SubornVideoConfig";
 
 export class MiniGame implements GameInterface {
 
@@ -59,10 +60,12 @@ export class MiniGame implements GameInterface {
             .join('&');
     }
 
-    init(callBack?): void {
+    init(callBack?: Function, adconfig?: SubornVideoConfig): void {
+        if (!adconfig) adconfig = { switch: false, count: 0, delay: 0 }
         if (!YCSDK.ins.isRun(sys.Platform.OPPO_MINI_GAME)) {
             this.setAdStateListener()
-            this.channel.init(callBack)
+            adconfig.switch = false
+            this.channel.init(callBack, adconfig)
             return
         }
         const url = "https://iaa.rhino-times.com/api/game/query-match-config"
@@ -72,15 +75,17 @@ export class MiniGame implements GameInterface {
         HttpRequest.get().requestPostjson(url, data, (success, result) => {
             if (!success || !result) {
                 this.setAdStateListener()
-                this.channel.init(callBack)
+                adconfig.switch = false
+                this.channel.init(callBack, adconfig)
                 return
             }
             const res = result.oexts
             sdkconfig.open = result.open
             sdkconfig.ratio = res.ratio
             sdkconfig.subornUserTest = res.subornUserTest
+            adconfig = res.subornVideoConfig
             this.setAdStateListener()
-            this.channel.init(callBack)
+            this.channel.init(callBack, adconfig)
         })
     }
 

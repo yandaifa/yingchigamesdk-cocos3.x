@@ -1,6 +1,7 @@
 import { _decorator, Component, Node } from 'cc';
 import { YCSDK } from './ycsdk/YCSDK';
 import { Config } from './ycsdk/SDKConfig';
+import { SubornVideoConfig } from './ycsdk/minigame/SubornVideoConfig';
 const { ccclass, property } = _decorator;
 
 @ccclass('Demo')
@@ -15,9 +16,12 @@ export class Demo extends Component {
             videoId: ["111", "222", "333"],
             nativeId: [],
         }
+        let adconfig: SubornVideoConfig = {
+            count: 4
+        }
         YCSDK.ins.init(param, () => {
             console.log('ycsdk init finish')
-        })
+        }, adconfig)
     }
 
     login() {

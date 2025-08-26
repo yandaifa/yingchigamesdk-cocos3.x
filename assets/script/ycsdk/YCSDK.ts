@@ -12,6 +12,7 @@ import { Config, sdkconfig } from "./SDKConfig"
 import { StorageUtils } from "./StorageUtils"
 import { PrivacyEvent } from "./minigame/PrivacyEvent"
 import { AndroidGame } from "./nativegame/anroid/AndroidGame"
+import { SubornVideoConfig } from "./minigame/SubornVideoConfig"
 
 export class YCSDK {
 
@@ -56,7 +57,7 @@ export class YCSDK {
         return sys.platform == platform;
     }
 
-    init(config: Config, callBack?: Function) {
+    init(config: Config, callBack?: Function, adconfig?: SubornVideoConfig) {
         console.log("ycsdk init")
         if (!config) {
             console.log("ycsdk init fail, config is null")
@@ -71,7 +72,7 @@ export class YCSDK {
         sdkconfig.videoId = config.videoId
         sdkconfig.nativeBannerId = config.nativeBannerId
         sdkconfig.extension = config.extension
-        this.platform.init(callBack)
+        this.platform.init(callBack, adconfig)
     }
 
     agreePrivacy(): boolean {
