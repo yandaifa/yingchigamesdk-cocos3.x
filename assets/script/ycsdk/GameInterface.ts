@@ -3,6 +3,7 @@ import { BannerType } from "./minigame/BannerType"
 import { InterstitialType } from "./minigame/InterstitialType"
 import { PrivacyListener } from "./minigame/PrivacyListener"
 import { SubornVideoConfig } from "./minigame/SubornVideoConfig"
+import { SubornNativeConfig } from "./minigame/SubornNativeConfig"
 
 export interface GameInterface {
 
@@ -10,7 +11,7 @@ export interface GameInterface {
    * 初始化，在游戏开始前调用
    * @param callBack sdk初始化完成回调
    */
-  init(callBack?: Function, adconfig?: SubornVideoConfig): void
+  init(callBack?: Function, adconfig?: SubornVideoConfig, config?: SubornNativeConfig): void
 
   //展示隐私政策
   showPolicy?(node: Node, callBack: PrivacyListener): void

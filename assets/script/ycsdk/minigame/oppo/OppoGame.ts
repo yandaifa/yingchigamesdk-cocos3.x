@@ -5,6 +5,7 @@ import { YCSDK } from "../../YCSDK"
 import { SubornVideoConfig } from "../SubornVideoConfig"
 import { BannerType } from "../BannerType"
 import { InterstitialType } from "../InterstitialType"
+import { SubornNativeConfig } from "../SubornNativeConfig"
 
 export class OppoGame implements GameInterface {
 
@@ -17,10 +18,11 @@ export class OppoGame implements GameInterface {
         console.log("current channel is oppo")
     }
 
-    init(callback?: Function, adconfig?: SubornVideoConfig): void {
+    init(callback?: Function, adconfig?: SubornVideoConfig, config?: SubornNativeConfig): void {
         if (sdkconfig.subornUserTest) {
             sdkconfig.subornUser = true
-            this.config(adconfig)
+            this.configVideo(adconfig)
+            this.configNative(config)
             callback && callback()
             return
         }
@@ -32,13 +34,25 @@ export class OppoGame implements GameInterface {
             let referrerInfo = info.referrerInfo
             if (query && query.key1 && query.key2) {
                 sdkconfig.subornUser = true
-                this.config(adconfig)
+                this.configVideo(adconfig)
+                this.configNative(config)
             }
         }
         callback && callback()
     }
 
-    config(adconfig: SubornVideoConfig): void {
+    configNative(config?: SubornNativeConfig) {
+        if (!config.switch) {
+            return
+        }
+        if (config.loop > 0) {
+            setInterval(() => {
+                this.showInters(config.type == 0 ? InterstitialType.Initial : InterstitialType.Native)
+            }, config.loop * 1000)
+        }
+    }
+
+    configVideo(adconfig: SubornVideoConfig): void {
         if (!adconfig.switch) {
             return
         }
