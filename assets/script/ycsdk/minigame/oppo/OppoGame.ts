@@ -78,11 +78,11 @@ export class OppoGame implements GameInterface {
             console.log('banner广告参数没有配置')
             return
         }
+        if (position == BannerType.Native) {
+            this.showNativeBanner()
+            return
+        }
         this.hideBanner()
-        // if (sdkconfig.subornUser) {
-        //     this.showBigPicAd()
-        //     return
-        // }
         this.createBannerAd(position)
     }
 
@@ -109,13 +109,18 @@ export class OppoGame implements GameInterface {
                 this.bannerAd = null
             }
         })
-        this.bannerAd.onError(err => {
+         this.bannerAd.onError(err => {
             console.log("banner错误监听: ", JSON.stringify(err))
             if (this.bannerAd) {
                 this.bannerAd.destroy()
                 this.bannerAd = null
             }
-            YCSDK.ins.onError(AdType.Banner)
+            if (!sdkconfig.nativeBannerId || sdkconfig.nativeBannerId.length <= 0) {
+                YCSDK.ins.onError(AdType.Banner)
+                return
+            }
+            YCSDK.ins.onLoad(AdType.Banner)
+            this.showNativeBanner()
         })
         this.bannerAd.onClick(obj => {
             console.log(`开启Banner广告点击回调: code: ${obj.code},msg: '${obj.msg}'`)
@@ -180,12 +185,12 @@ export class OppoGame implements GameInterface {
         interstitialAd.load()
     }
 
-    showNativeType() {
+        showNativeType() {
         if (!sdkconfig.ycNativeId) {
             console.log('原生模板广告参数没有配置')
             return
         }
-        let { windowHeight, windowWidth, platformVersionCode, screenWidth, screenHeight } = this.qg.getSystemInfoSync()
+        let { windowHeight, windowWidth, platformVersionCode } = this.qg.getSystemInfoSync()
         if (platformVersionCode < 1094) {
             console.log("快应用平台版本号低于1094,暂不支持原生模板广告相关API")
             return
@@ -194,13 +199,24 @@ export class OppoGame implements GameInterface {
             this.nativeAd.destroy()
             this.nativeAd = null
         }
-        this.nativeAd = this.qg.createCustomAd({
-            adUnitId: sdkconfig.ycNativeId,
-            style: {
+        let style
+        if (YCSDK.ins.vertical()) {
+            style = {
                 top: windowHeight * 0.4,
                 left: (windowWidth - windowWidth * 0.6) / 2,
                 width: windowWidth * 0.6,
             }
+        } else {
+            style = {
+                //广告尺寸按4：3计算
+                top: (windowHeight - (windowWidth * 0.6 * 0.75)) / 2,
+                left: (windowWidth - windowWidth * 0.6) / 2,
+                width: windowWidth * 0.6,
+            }
+        }
+        this.nativeAd = this.qg.createCustomAd({
+            adUnitId: sdkconfig.ycNativeId,
+            style: style
         })
         this.nativeAd.onLoad(() => {
             console.log('[原生模板广告] 广告加载成功')
@@ -320,6 +336,189 @@ export class OppoGame implements GameInterface {
         })
         videoAd.load()
         YCSDK.ins.onLoad(AdType.Video)
+    }
+
+    showNativeBanner() {
+        if (this.qg.getSystemInfoSync().platformVersionCode < 1144) {
+            console.log("快应用平台版本号低于1144，暂不支持原生2.0相关API")
+            return
+        }
+        let { windowHeight, windowWidth } = this.qg.getSystemInfoSync()
+        let style = null
+        let bannerHeight = null
+        if (YCSDK.ins.vertical()) {
+            bannerHeight = windowWidth / 5
+            style = {
+                top: windowHeight - bannerHeight,
+                left: 0,
+                width: windowWidth,
+                height: bannerHeight
+            }
+        } else {
+            bannerHeight = windowHeight / 5
+            style = {
+                top: windowHeight - bannerHeight,
+                left: (windowWidth - windowHeight) / 2,
+                width: windowHeight,
+                height: bannerHeight
+            }
+        }
+        let nativeAdvanceAd = this.qg.createNativeAdvanceAd({
+            adUnitId: sdkconfig.ycNativeBannerId,
+            style: style
+        })
+        nativeAdvanceAd.load().then(() => {
+            console.log("promise 回调：加载成功")
+        }).catch((err) => {
+            console.log(`promise 回调：加载失败 ${JSON.stringify(err)}`)
+        })
+        nativeAdvanceAd.onLoad(function (res) {
+            console.log(`原生广告2.0加载回调, code: ${res.code}, msg: ${res.msg}, adList:${JSON.stringify(res.adList)}`)
+            YCSDK.ins.onLoad(AdType.NativeBanner)
+            if (res.code === 0 && res.adList && res.adList.length > 0) {
+                let _adId = res.adList[0].adId;
+                console.log("获取广告id: " + _adId);
+                if (_adId) {
+                    try {
+                        let nativeAdvanceAdRect = nativeAdvanceAd.createComponent({
+                            adId: _adId,
+                            componentType: "Rect",
+                            style: {
+                                color: "#FFFFFFFF",
+                                borderRadius: 20,
+                                borderWidth: 4,
+                                borderColor: "#89FFFFFF",
+                                opacity: 1,
+                                left: 0,
+                                top: 0,
+                                width: windowWidth,
+                                height: bannerHeight,
+                            },
+                        });
+                        console.log("尝试创建组件 Rect, 获取组件ID： ", nativeAdvanceAdRect.getComponentId()
+                        );
+                    } catch (error) {
+                        console.log("尝试创建组件 Rect 异常,请检查参数");
+                    }
+                    try {
+                        let nativeAdvanceAdImage = nativeAdvanceAd.createComponent({
+                            adId: _adId,
+                            componentType: "AdImage",
+                            style: {
+                                imageStyle: "icon",
+                                width: windowWidth / 5 - 30,
+                                height: bannerHeight - 30,
+                                borderRadius: 20,
+                                left: 15,
+                                top: 15,
+                            },
+                        });
+                        console.log("尝试创建组件 AdImage, 获取组件ID： ", nativeAdvanceAdImage.getComponentId());
+                    } catch (error) {
+                        console.log("尝试创建组件 AdImage 异常,请检查参数");
+                    }
+                    try {
+                        let adTextComponent = nativeAdvanceAd.createComponent({
+                            adId: _adId,
+                            componentType: "AdText",
+                            style: {
+                                textStyle: "title",
+                                color: "#000000",
+                                fontSize: 18,
+                                top: bannerHeight / 4,
+                                left: windowWidth / 5 + 20,
+                                width: windowWidth / 2,
+                                height: bannerHeight / 2
+                            }
+                        })
+                        console.log("尝试创建组件 AdText, 获取组件ID： ", adTextComponent.getComponentId())
+                    } catch {
+                        console.log("尝试创建组件 AdText 异常,请检查参数");
+                    }
+                    try {
+                        let nativeAdvanceAdButton = nativeAdvanceAd.createComponent({
+                            adId: _adId,
+                            componentType: "AdButton",
+                            style: {
+                                left: windowWidth - windowWidth / 3,
+                                top: bannerHeight / 3,
+                                opacity: 1,
+                            },
+                        });
+                        console.log("尝试创建组件 AdButton, 获取组件ID： ", nativeAdvanceAdButton.getComponentId()
+                        );
+                    } catch (error) {
+                        console.log("尝试创建组件 AdButton 异常,请检查参数");
+                    }
+                    try {
+                        let nativeAdvanceAdCloseButton = nativeAdvanceAd.createComponent({
+                            adId: _adId,
+                            componentType: "AdCloseButton",
+                            style: {
+                                closeStyle: "topRight",
+                            },
+                        });
+                        console.log("尝试创建组件 AdCloseButton, 获取组件ID： ", nativeAdvanceAdCloseButton.getComponentId()
+                        );
+                    } catch (error) {
+                        console.log("尝试创建组件 AdCloseButton 异常,请检查参数");
+                    }
+                    try {
+                        let nativeAdvanceAdLogo = nativeAdvanceAd.createComponent({
+                            adId: _adId,
+                            componentType: "AdLogo",
+                            style: {
+                                left: windowWidth - 80,
+                                top: bannerHeight - 30,
+                            },
+                        });
+                        console.log("尝试创建组件 AdLogo, 获取组件ID： ", nativeAdvanceAdLogo.getComponentId()
+                        );
+                    } catch (error) {
+                        console.log("尝试创建组件 AdLogo 异常,请检查参数")
+                    }
+
+                    try {
+                        let nativeAdvanceAdPrivacy = nativeAdvanceAd.createComponent({
+                            adId: _adId,
+                            componentType: "AdPrivacy",
+                            style: {
+                                privacyStyle: "light",
+                                fontSize: 12,
+                            },
+                        });
+                        console.log("尝试创建组件 AdPrivacy, 获取组件ID： ", nativeAdvanceAdPrivacy.getComponentId())
+
+                    } catch (error) {
+                        console.log("尝试创建组件 AdPrivacy 异常,请检查参数")
+                    }
+                    nativeAdvanceAd.show({ adId: _adId, })
+                        .then(() => {
+                            console.log("promise 回调：展示成功")
+                        })
+                        .catch((err) => {
+                            console.log(`promise 回调：展示失败 ${JSON.stringify(err)}`)
+                            nativeAdvanceAd.destroy()
+                        })
+                }
+            }
+        });
+        nativeAdvanceAd.onCreateComponentSucc(function (res) {
+            console.log(`创建原生广告2.0组件成功回调, code: ${res.code}, msg: ${res.msg},adId: ${res.adId}, 组件ID: ${res.componentId}`);
+        })
+        nativeAdvanceAd.onShow(function (res) {
+            console.log(`原生广告2.0展示回调, code: ${res.code}, msg: ${res.msg}`)
+            YCSDK.ins.onShow(AdType.NativeBanner)
+        })
+        nativeAdvanceAd.onError(function (err) {
+            console.log(`原生广告2.0错误回调 : ${JSON.stringify(err)}`)
+            YCSDK.ins.onError(AdType.NativeBanner)
+        })
+        nativeAdvanceAd.onClose((res) => {
+            console.log(`原生广告2.0关闭回调, code: ${res.code}, msg: ${res.msg}`)
+            YCSDK.ins.onClose(AdType.NativeBanner)
+            nativeAdvanceAd.destroy()
+        })
     }
 
     customFunc(methodName: string, params: any[], callBack: Function) {

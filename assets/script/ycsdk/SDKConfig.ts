@@ -6,7 +6,7 @@ export interface Config {
     videoId?: string[]
     nativeId?: string[]
     nativeBannerId?: string[],
-    extension?:string[]
+    extension?: string[]
 }
 
 interface SDKConfig extends Config {
@@ -24,6 +24,11 @@ interface SDKConfig extends Config {
     customFunc?: {}
 }
 
+// export let Config: Config = {
+//     pkgName: "",
+//     appId: ""
+// }
+
 export let sdkconfig: SDKConfig = {
     open: true,
     subornUser: false,
@@ -36,7 +41,7 @@ export let sdkconfig: SDKConfig = {
     videoId: [],
     nativeId: [],
     nativeBannerId: [],
-    extension:[],
+    extension: [],
     ratio: {
         inters: 50,
         native: 50,

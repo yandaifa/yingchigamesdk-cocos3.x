@@ -2,24 +2,26 @@ import { _decorator, Component, Node } from 'cc';
 import { YCSDK } from './ycsdk/YCSDK';
 import { Config } from './ycsdk/SDKConfig';
 import { SubornVideoConfig } from './ycsdk/minigame/SubornVideoConfig';
+import { BannerType } from './ycsdk/minigame/BannerType';
+import { InterstitialType } from './ycsdk/minigame/InterstitialType';
 const { ccclass, property } = _decorator;
 
 @ccclass('Demo')
 export class Demo extends Component {
 
     init() {
-        let param: Config = {
-            pkgName: "",
+        let params: Config = {
+            pkgName: "com.tlx.wddzz.nearme.gamecenter",
             appId: "",
-            bannerId: [],
-            intersId: [],
-            videoId: ["111", "222", "333"],
-            nativeId: [],
+            bannerId: ["2913720", "2913716", "2913711", "2913706", "2913702"],
+            videoId: ["2913725", "2913730", "2913745", "2913750", "2913755"],
+            nativeId: ["2913818", "2913813", "2913809", "2913804", "2913799"],
+            nativeBannerId: ["2913762", "2913763", "2913765", "2913770", "2913775"]
         }
         let adconfig: SubornVideoConfig = {
             count: 4
         }
-        YCSDK.ins.init(param, () => {
+        YCSDK.ins.init(params, () => {
             console.log('ycsdk init finish')
         }, adconfig)
     }
@@ -52,7 +54,7 @@ export class Demo extends Component {
     }
 
     showBanner() {
-        YCSDK.ins.showBanner()
+        YCSDK.ins.showBanner(BannerType.Native)
     }
 
     hideBanner() {
@@ -60,7 +62,7 @@ export class Demo extends Component {
     }
 
     showInters() {
-        YCSDK.ins.showInters()
+        YCSDK.ins.showInters(InterstitialType.Native)
     }
 
     hideInters() {
